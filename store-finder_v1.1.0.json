@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "Store Finder API - DRAFT VERSION",
+    "title": "Store Finder",
     "version": "1.1.0",
     "description": "API to get information about stores: name, postal address, open hours, coordinates, etc.\n\n# Relevant Definitions and concepts\n\n* **Store**: A shop of any size or kind where you can buy many different types of goods or services or be assisted.\n\n# API Functionality\nThis API is designed to look for stores around a given location and get details about those stores.\n# Resources and Operations overview\n\n There is just a resource in the API: **/stores** to request the API to return near stores to a given location. An specific store can be requested through their storeId: **/stores/{store_id}**\n\n Resource in the API can be used in 3-legged or 2-legged mode.\n \n# Further Info and Support\nFind answers to Frequently Asked Questions in https://qna.baikalplatform.com/c/api-faq\nTopics with the **tag 'Store Finder'** are specific for Store Finder or Store Appointments Booking API.",
     "termsOfService": "https://www.telefonica.es/es/",
