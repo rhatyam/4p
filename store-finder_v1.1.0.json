@@ -1,0 +1,633 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Store Finder API - DRAFT VERSION",
+    "version": "1.1.0",
+    "description": "API to get information about stores: name, postal address, open hours, coordinates, etc.\n\n# Relevant Definitions and concepts\n\n* **Store**: A shop of any size or kind where you can buy many different types of goods or services or be assisted.\n\n# API Functionality\nThis API is designed to look for stores around a given location and get details about those stores.\n# Resources and Operations overview\n\n There is just a resource in the API: **/stores** to request the API to return near stores to a given location. An specific store can be requested through their storeId: **/stores/{store_id}**\n\n Resource in the API can be used in 3-legged or 2-legged mode.\n \n# Further Info and Support\nFind answers to Frequently Asked Questions in https://qna.baikalplatform.com/c/api-faq\nTopics with the **tag 'Store Finder'** are specific for Store Finder or Store Appointments Booking API.",
+    "termsOfService": "https://www.telefonica.es/es/",
+    "contact": {
+      "name": "4th Platform Team",
+      "email": "4pf@tid.es"
+    }
+  },
+  "x-fp-apiPrefix": "/store-finder",
+  "schemes": [
+    "https"
+  ],
+  "host": "store-finder:8080",
+  "basePath": "/store-finder/v1",
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "tags": [
+    {
+      "name": "stores",
+      "description": "Operations available to get stores information"
+    }
+  ],
+  "x-fp-scopesDefinition": {
+    "stores:read": "Allows you to look for stores information"
+  },
+  "paths": {
+    "/stores": {
+      "get": {
+        "tags": [
+          "stores"
+        ],
+        "summary": "Looks for shops around a location.",
+        "description": "Looks for shops around a location",
+        "operationId": "fetchStores",
+        "x-fp-scopes": [
+          "stores:read"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-correlator",
+            "required": false,
+            "description": "Correlation id for the different services",
+            "type": "string"
+          },
+          {
+            "name": "latitude",
+            "in": "query",
+            "required": true,
+            "description": "latitude coordinate of a geographical location expressed in decimal degress.",
+            "type": "number",
+            "format": "float",
+            "minimum": -90,
+            "maximum": 90,
+            "multipleOf": 0.000001
+          },
+          {
+            "name": "longitude",
+            "in": "query",
+            "required": true,
+            "description": "longitude coordinate of a geographical location expressed in decimal degress.",
+            "type": "number",
+            "format": "float",
+            "minimum": -180,
+            "maximum": 180,
+            "multipleOf": 0.000001
+          },
+          {
+            "name": "radius",
+            "in": "query",
+            "description": "Filter to limit the returned venues to the ones that are located within the provided radius.\nUnit is km. If not provided a default one will be used.\n",
+            "required": false,
+            "type": "number",
+            "format": "double",
+            "default": 1.5
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of stores",
+            "headers": {
+              "x-correlator": {
+                "description": "Correlation id for the different services",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Store"
+              }
+            }
+          },
+          "400": {
+            "description": "Problem with the client request",
+            "headers": {
+              "x-correlator": {
+                "description": "Correlation id for the different services",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "https://docs.baikalplatform.com/errors/v2.0/errors.json#/definitions/InvalidArgument"
+            },
+            "examples": {
+              "application/json": {
+                "code": "INVALID_ARGUMENT",
+                "message": "Client specified an invalid argument, request body or query param"
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "headers": {
+              "x-correlator": {
+                "description": "Correlation id for the different services",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "https://docs.baikalplatform.com/errors/v2.0/errors.json#/definitions/NotFound"
+            },
+            "examples": {
+              "application/json": {
+                "code": "NOT_FOUND",
+                "message": "A specified resource is not found"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "headers": {
+              "x-correlator": {
+                "description": "Correlation id for the different services",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "https://docs.baikalplatform.com/errors/v2.0/errors.json#/definitions/Internal"
+            },
+            "examples": {
+              "application/json": {
+                "code": "INTERNAL",
+                "message": "Server error"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stores/{store_id}": {
+      "get": {
+        "tags": [
+          "stores"
+        ],
+        "summary": "Fetches a store",
+        "description": "Fetches a store.",
+        "operationId": "fetchStore",
+        "x-fp-scopes": [
+          "stores:read"
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-correlator",
+            "required": false,
+            "description": "Correlation id for the different services",
+            "type": "string"
+          },
+          {
+            "name": "store_id",
+            "in": "path",
+            "description": "Store Identifier",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Store details",
+            "headers": {
+              "x-correlator": {
+                "description": "Correlation id for the different services",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Store"
+            },
+            "examples": {
+              "application/json": {
+                "store_id": "fd5582d5-ef7a-4fa8-be84-602793f14497",
+                "name": "Gran Via flagship store",
+                "link": "http://flagshipstore.telefonica.es",
+                "address": {
+                  "formatted": "Evergreen Terrace Street, N33, 2nd-B\r\n47022 Valladolid (Valladolid)\r\nES",
+                  "street_address": "Evergreen Terrace Street, N33, 2nd - B",
+                  "locality": "Valladolid",
+                  "region": "Valladolid",
+                  "postal_code": "47022",
+                  "country": "ES"
+                },
+                "phone_number": "+34655555555",
+                "availability": {
+                  "regular_days": [
+                    {
+                      "open": "09:00",
+                      "close": "21:30",
+                      "dayOfWeek": "MON"
+                    },
+                    {
+                      "open": "09:00",
+                      "close": "21:30",
+                      "dayOfWeek": "TUE"
+                    },
+                    {
+                      "open": "09:00",
+                      "close": "21:30",
+                      "dayOfWeek": "WED"
+                    },
+                    {
+                      "open": "09:00",
+                      "close": "21:30",
+                      "dayOfWeek": "THU"
+                    },
+                    {
+                      "open": "09:00",
+                      "close": "15:00",
+                      "dayOfWeek": "FRI"
+                    }
+                  ],
+                  "special_days": [
+                    {
+                      "open": "09:00",
+                      "close": "15:00",
+                      "date": "2020-12-25"
+                    },
+                    {
+                      "open": "09:00",
+                      "close": "19:00",
+                      "date": "2020-12-31"
+                    }
+                  ]
+                },
+                "appointment_provider": "QUDINI"
+              }
+            }
+          },
+          "400": {
+            "description": "Problem with the client request",
+            "headers": {
+              "x-correlator": {
+                "description": "Correlation id for the different services",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "https://docs.baikalplatform.com/errors/v2.0/errors.json#/definitions/InvalidArgument"
+            },
+            "examples": {
+              "application/json": {
+                "code": "INVALID_ARGUMENT",
+                "message": "Client specified an invalid argument, request body or query param"
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "headers": {
+              "x-correlator": {
+                "description": "Correlation id for the different services",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "https://docs.baikalplatform.com/errors/v2.0/errors.json#/definitions/NotFound"
+            },
+            "examples": {
+              "application/json": {
+                "code": "NOT_FOUND",
+                "message": "A specified resource is not found"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "headers": {
+              "x-correlator": {
+                "description": "Correlation id for the different services",
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "https://docs.baikalplatform.com/errors/v2.0/errors.json#/definitions/Internal"
+            },
+            "examples": {
+              "application/json": {
+                "code": "INTERNAL",
+                "message": "Server error"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-fp-health": "http://store-finder:8080/healthz",
+  "definitions": {
+    "Store": {
+      "type": "object",
+      "description": "Store model",
+      "required": [
+        "store_id",
+        "name",
+        "address"
+      ],
+      "properties": {
+        "store_id": {
+          "type": "string",
+          "description": "Store Identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the store in printable format."
+        },
+        "link": {
+          "type": "string",
+          "description": "Public URL for the store"
+        },
+        "address": {
+          "description": "Postal address of the store",
+          "$ref": "#/definitions/PostalAddress"
+        },
+        "phone_number": {
+          "type": "string",
+          "description": "Phone number for the store. E164 with + format."
+        },
+        "distance": {
+          "type": "number",
+          "description": "Euclidean distance from current user location to the venue.\nUnit is km.\n",
+          "format": "float",
+          "multipleOf": 0.01
+        },
+        "availability": {
+          "description": "Store open and close hours for regular and special days",
+          "$ref": "#/definitions/StoreAvailability"
+        },
+        "coordinates": {
+          "description": "Store location coordinates",
+          "$ref": "#/definitions/Coordinates"
+        },
+        "appointment_provider": {
+          "type": "string",
+          "description": "Identifier for the appointment booking provider"
+        }
+      },
+      "example": {
+        "store_id": "fd5582d5-ef7a-4fa8-be84-602793f14497",
+        "name": "Gran Via flagship store",
+        "link": "http://flagshipstore.telefonica.es",
+        "address": {
+          "formatted": "Evergreen Terrace Street, N33, 2nd-B\r\n47022 Valladolid (Valladolid)\r\nES",
+          "street_address": "Evergreen Terrace Street, N33, 2nd - B",
+          "locality": "Valladolid",
+          "region": "Valladolid",
+          "postal_code": "47022",
+          "country": "ES"
+        },
+        "phone_number": "+34655555555",
+        "distance": 1.01,
+        "availability": {
+          "regular_days": [
+            {
+              "open": "09:00",
+              "close": "21:30",
+              "dayOfWeek": "MON"
+            },
+            {
+              "open": "09:00",
+              "close": "21:30",
+              "dayOfWeek": "TUE"
+            },
+            {
+              "open": "09:00",
+              "close": "21:30",
+              "dayOfWeek": "WED"
+            },
+            {
+              "open": "09:00",
+              "close": "21:30",
+              "dayOfWeek": "THU"
+            },
+            {
+              "open": "09:00",
+              "close": "15:00",
+              "dayOfWeek": "FRI"
+            }
+          ],
+          "special_days": [
+            {
+              "open": "09:00",
+              "close": "15:00",
+              "date": "2020-12-25"
+            },
+            {
+              "open": "09:00",
+              "close": "19:00",
+              "date": "2020-12-31"
+            }
+          ]
+        },
+        "coordinates": {
+          "latitude": 40.419316,
+          "longitude": -3.698839
+        },
+        "appointment_provider": "QUDINI"
+      }
+    },
+    "Coordinates": {
+      "type": "object",
+      "description": "Coordinates of a geographical location",
+      "required": [
+        "latitude",
+        "longitude"
+      ],
+      "properties": {
+        "latitude": {
+          "description": "latitude coordinate of a geographical location expressed in decimal degress.",
+          "type": "number",
+          "format": "float",
+          "minimum": -90,
+          "maximum": 90,
+          "multipleOf": 0.000001
+        },
+        "longitude": {
+          "description": "longitude coordinate of a geographical location expressed in decimal degress.",
+          "type": "number",
+          "format": "float",
+          "minimum": -180,
+          "maximum": 180,
+          "multipleOf": 0.000001
+        }
+      },
+      "example": {
+        "latitude": 40.419316,
+        "longitude": -3.698839
+      }
+    },
+    "StoreAvailability": {
+      "type": "object",
+      "description": "Store open and close hours for regular and special days",
+      "required": [
+        "regular_days"
+      ],
+      "properties": {
+        "regular_days": {
+          "description": "Store open and close hours for regular days",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/GenericAvailabilityDay"
+          }
+        },
+        "special_days": {
+          "description": "Store open and close hours for special days",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SpecialAvailabilityDay"
+          }
+        }
+      },
+      "example": {
+        "regular_days": [
+          {
+            "open": "09:00",
+            "close": "21:30",
+            "dayOfWeek": "MON"
+          },
+          {
+            "open": "09:00",
+            "close": "21:30",
+            "dayOfWeek": "TUE"
+          },
+          {
+            "open": "09:00",
+            "close": "21:30",
+            "dayOfWeek": "WED"
+          },
+          {
+            "open": "09:00",
+            "close": "21:30",
+            "dayOfWeek": "THU"
+          },
+          {
+            "open": "09:00",
+            "close": "15:00",
+            "dayOfWeek": "FRI"
+          }
+        ],
+        "special_days": [
+          {
+            "open": "09:00",
+            "close": "15:00",
+            "date": "2020-12-25"
+          },
+          {
+            "open": "09:00",
+            "close": "19:00",
+            "date": "2020-12-31"
+          }
+        ]
+      }
+    },
+    "GenericAvailabilityDay": {
+      "type": "object",
+      "description": "Store open and close hours for regular days",
+      "required": [
+        "open",
+        "close",
+        "day_of_week"
+      ],
+      "properties": {
+        "open": {
+          "description": "Store open hour. Presentation String",
+          "type": "string"
+        },
+        "close": {
+          "description": "Store close hour. Presentation String",
+          "type": "string"
+        },
+        "day_of_week": {
+          "description": "Day of the week",
+          "$ref": "#/definitions/DayOfWeek"
+        }
+      },
+      "example": {
+        "open": "09:00",
+        "close": "21:30",
+        "day_of_week": "MON"
+      }
+    },
+    "SpecialAvailabilityDay": {
+      "type": "object",
+      "description": "Store open and close hours for special days",
+      "required": [
+        "open",
+        "close",
+        "date"
+      ],
+      "properties": {
+        "open": {
+          "description": "Store open hour. Presentation String",
+          "type": "string"
+        },
+        "close": {
+          "description": "Store close hour. Presentation String",
+          "type": "string"
+        },
+        "date": {
+          "description": "Special day date",
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "example": {
+        "open": "09:00",
+        "close": "20:30",
+        "date": "2020-12-25"
+      }
+    },
+    "DayOfWeek": {
+      "type": "string",
+      "description": "Day of the week",
+      "enum": [
+        "MON",
+        "TUE",
+        "WED",
+        "THU",
+        "FRI",
+        "SAT",
+        "SUN"
+      ]
+    },
+    "PostalAddress": {
+      "type": "object",
+      "description": "Postal address of the store",
+      "required": [
+        "formatted"
+      ],
+      "properties": {
+        "formatted": {
+          "type": "string",
+          "description": "Full mailing address, formatted for display or use on a mailing label. This field MAY contain multiple lines, separated by newlines. Newlines can be represented either as a carriage return/line feed pair (\"\\r\\n\") or as a single line feed character (\"\\n\")."
+        },
+        "street_address": {
+          "type": "string",
+          "description": "Full street address, which MAY include house number, street name, Post Office Box, and multi-line extended street address information. This field MAY contain multiple lines, separated by newlines. Newlines can be represented either as a carriage return/line feed pair (\"\\r\\n\") or as a single line feed character (\"\\n\")."
+        },
+        "locality": {
+          "type": "string",
+          "description": "City or locality"
+        },
+        "region": {
+          "type": "string",
+          "description": "State, province, prefecture, or region."
+        },
+        "postal_code": {
+          "type": "string",
+          "description": "Zip code or postal code."
+        },
+        "country": {
+          "type": "string",
+          "description": "Country name. Format iso3166-1 alpha-2"
+        }
+      },
+      "example": {
+        "formatted": "Evergreen Terrace Street, N33, 2nd-B\r\n47022 Valladolid (Valladolid)\r\nES",
+        "street_address": "Evergreen Terrace Street, N33, 2nd - B",
+        "locality": "Valladolid",
+        "region": "Valladolid",
+        "postal_code": "47022",
+        "country": "ES"
+      }
+    }
+  }
+}
